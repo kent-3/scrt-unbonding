@@ -8,6 +8,9 @@ This script is used to create a 21 day chart of SCRT unbonding per day.
 3. Run with `npm run start`
 
 ### Notes
-- Takes about 100 seconds to complete.
-- Information is saved in `unbonding.json`.
-- View chart with `chart.png` or `chart.html`.
+- Takes about 100 seconds to complete
+- Information is saved in `unbonding.json`
+- View chart with `chart.png` or `chart.html`
+
+### Sample
+![Image](chart.png)
