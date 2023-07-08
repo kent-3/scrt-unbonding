@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Balance Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <canvas id="balanceChart"></canvas>
+    <script>
+      // Fetch the JSON file
+      fetch("unbonding.json")
+        .then((response) => response.json())
+        .then((balancesData) => {
+          const groupedData = Object.values(balancesData).flatMap((entries) =>
+            entries.map(({ completion_time, balance }) => ({
+              date: new Date(completion_time).toLocaleDateString(),
+              balance: parseInt(balance) / 1000000,
+            }))
+          );
+
+          // Group balances by date
+          const groupedByDate = groupedData.reduce(
+            (groups, { date, balance }) => {
+              if (!groups[date]) {
+                groups[date] = [];
+              }
+              groups[date].push(balance);
+              return groups;
+            },
+            {}
+          );
+
+          // Sort the grouped data by date
+          const sortedData = Object.entries(groupedByDate).sort(
+            ([dateA], [dateB]) => {
+              const date1 = new Date(dateA);
+              const date2 = new Date(dateB);
+              return date1 - date2;
+            }
+          );
+
+          // Extract the dates and balances
+          const labels = sortedData.map(([date]) => {
+            const dateObj = new Date(date);
+            const day = dateObj.getDate().toString().padStart(2, "0");
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+            return `${month}/${day}`;
+          });
+
+          const datasets = [
+            {
+              label: "SCRT",
+              data: sortedData.map(([_, balances]) =>
+                balances.reduce((sum, balance) => sum + balance, 0)
+              ),
+              backgroundColor: "rgba(0, 123, 255, 0.5)",
+              borderColor: "rgba(0, 123, 255, 1)",
+              borderWidth: 1,
+            },
+          ];
+
+          const totalUnbonding = datasets[0].data.reduce(
+            (sum, balance) => sum + balance,
+            0
+          );
+
+          // Create chart
+          const ctx = document.getElementById("balanceChart").getContext("2d");
+
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: datasets,
+            },
+            options: {
+              layout: {
+                padding: {
+                  top: 5,
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                },
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                },
+              },
+              plugins: {
+                legend: {
+                  display: false,
+                },
+                title: {
+                  display: true,
+                  text: "SCRT Unbonding",
+                  font: {
+                    size: 24,
+                  },
+                  padding: {
+                    top: 10,
+                    bottom: 0,
+                  },
+                },
+                subtitle: {
+                  display: true,
+                  text: `Total: ${Math.round(
+                    totalUnbonding
+                  ).toLocaleString()} SCRT`,
+                  font: {
+                    size: 16,
+                  },
+                  padding: {
+                    bottom: 10,
+                  },
+                },
+              },
+            },
+          });
+        })
+        .catch((error) => {
+          console.error("Error loading JSON file:", error);
+        });
+    </script>
+  </body>
+</html>

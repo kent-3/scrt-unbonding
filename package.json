@@ -1,0 +1,20 @@
+{
+  "main": "dist/main.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "tsc && node dist/main.js"
+	},
+  "type": "module",
+  "dependencies": {
+    "@types/chart.js": "^2.9.37",
+    "canvas": "^2.11.2",
+    "chart.js": "^4.3.0",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^2.0.1",
+    "@types/node": "^20.3.1",
+    "secretjs": "1.9.0",
+    "typescript": "^5.0.4"
+  }
+}
